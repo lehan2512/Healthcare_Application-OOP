@@ -1,51 +1,57 @@
+import java.util.*;
+
 public class Doctor {
-    private
-    String ID;
-    String name;
-    String birthday;
-    String specialization;
-    String contactNumber;
+    private String ID;
+    private String name;
+    private String specialization; //  Pass specialization as Neruophysician, Neurologist etc
+    private String contactNumber;
+    private ArrayList<Date> availabilityList = new ArrayList<>();
 
     public
-    Doctor(String ID, String name, String birthday, String specialization, String contactNumber) {
+    Doctor(String ID, String name, String specialization, String contactNumber) {
         this.ID = ID;
         this.name = name;
-        this.birthday = birthday;
         this.specialization = specialization;
         this.contactNumber = contactNumber;
     }
 
-    boolean isPhysician(){
+    public boolean isPhysician(){
         return specialization.contains("Physician");
     }
-    String getID (){
+    public String getID (){
         return ID;
     }
-    String getName (){
+    public String getName (){
         return name;
     }
-    String getBirthday (){
-        return birthday;
-    }
-    String getSpecialization (){
+    public String getSpecialization (){
         return specialization;
     }
-    String getContactNumber (){
+    public String getContactNumber (){
         return contactNumber;
     }
-    void setID (String ID){
+    public void setID (String ID){
         this.ID = ID;
     }
-    void setName (String name){
+    public void setName (String name){
         this.name = name;
     }
-    void setBirthday (String birthday){
-        this.birthday = birthday;
-    }
-    void setSpecialization (String specialization){
+    public void setSpecialization (String specialization){
         this.specialization = specialization;
     }
-    void setContactNumber (String contactNumber){
+    public void setContactNumber (String contactNumber){
         this.contactNumber = contactNumber;
     }
+    public ArrayList<Date> getAvailabilityList (){ return availabilityList; }
+    public void dsplayInfo(){
+        System.out.println("ID: " + this.ID + "Name: " + this.name + "Specialization: " + this.specialization + "ContactNumber: " + this.contactNumber);
+    }
+    public void addAvailability (Date availability){
+        availabilityList.add(availability);
+    }
+
+    public void viewAvailability(){
+
+    }
+
 }

@@ -1,16 +1,18 @@
 public class Patient {
     private
-    String ID;
+    String ID; // T or D in front, followed by '-' and a number. Eg: T-0034
     String Name;
-    String Birthday;
+    String dateOfBirth;
     String contactNumber;
+    String gender;
 
     public
-    Patient(String ID, String Name, String Birthday, String contactNumber) {
+    Patient(String ID, String Name, String dateOfBirth, String contactNumber, String gender) {
         this.ID = ID;
         this.Name = Name;
-        this.Birthday = Birthday;
+        this.dateOfBirth = dateOfBirth;
         this.contactNumber = contactNumber;
+        this.gender = gender;
     }
 
     char getPatientType()
@@ -23,12 +25,13 @@ public class Patient {
     String getName() {
         return Name;
     }
-    String getBirthday() {
-        return Birthday;
+    String getDateOfBirth() {
+        return dateOfBirth;
     }
     String getContactNumber() {
         return contactNumber;
     }
+    String getGender() { return gender; }
 
     void setID(String ID) {
         this.ID = ID;
@@ -36,10 +39,11 @@ public class Patient {
     void setName(String Name) {
         this.Name = Name;
     }
-    void setBirthday(String Birthday) {
-        this.Birthday = Birthday;
+    void setDateOfBirth(String Birthday) {
+        this.dateOfBirth = Birthday;
     }
     void setContactNumber(String contactNumber) {
         this.contactNumber = contactNumber;
     }
+    void setGender(String gender) { this.gender = gender; }
 }
