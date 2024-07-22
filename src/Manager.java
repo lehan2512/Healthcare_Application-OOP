@@ -39,6 +39,10 @@ public class Manager {
         getPatientMap().put("D-001", patient2);
         getPatientMap().put("T-002", patient3);
         getPatientMap().put("D-002", patient4);
+
+        //Dummy appointment
+        Appointment dummyAppointment = new Appointment(doc1, patient1, "notes", me, 5);
+        doc1.addAppointment(me, dummyAppointment);
     }
 
     public HashMap<String, Doctor> getDoctorMap(){
@@ -126,5 +130,17 @@ public class Manager {
         Date appointmentDate = appointment.getDate();
         selectedDoctor.addAppointment(appointmentDate, appointment);
         System.out.println("Appointment Booked\n");
+
+        // Remove date from availability list if all slots are booked
+        boolean slotsAvailable = false;
+        for (Appointment element : doctor.getCalendar().get(appointmentDate)) {
+            if (element == null) {
+                slotsAvailable = true;
+                break;
+            }
+        }
+        if (!slotsAvailable) {
+            doctor.getAvailabilityList().remove(appointmentDate);
+        }
     }
 }

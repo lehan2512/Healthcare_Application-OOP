@@ -6,9 +6,9 @@ public class Appointment {
     private Patient patient;
     private String notes;
     private Date date;
-    private String time;
+    private int time;
 
-    public Appointment(Doctor doctor, Patient patient, String notes, Date date, String time) {
+    public Appointment(Doctor doctor, Patient patient, String notes, Date date, int time) {
         this.doctor = doctor;
         this.patient = patient;
         this.notes = notes;
@@ -22,5 +22,9 @@ public class Appointment {
 
     public Date getDate() {
         return date;
+    }
+
+    public int getTime() {
+        return time;
     }
 }

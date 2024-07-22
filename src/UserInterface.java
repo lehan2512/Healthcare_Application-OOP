@@ -106,7 +106,7 @@ public class UserInterface {
         Input input = new Input();
         System.out.println("\nDoctor name: " + doctor.getName());
 
-        System.out.println("Availabilities:");
+        System.out.println("Available dates:");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         for (Date date : doctor.getAvailabilityList()) {
             String formattedDate = dateFormat.format(date);

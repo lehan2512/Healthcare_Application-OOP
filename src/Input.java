@@ -1,4 +1,6 @@
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -42,7 +44,7 @@ public class Input implements AutoCloseable {
         int year;
         int month;
         int day;
-        System.out.println("Enter Date\n");
+        System.out.println("\nEnter Date");
         System.out.println("Enter year (eg:-2024)\nOR enter '0' to exit:");
         year = this.integer();
         if (year == 0) {
@@ -252,7 +254,13 @@ public class Input implements AutoCloseable {
     public Appointment newAppointment (Patient patient, Doctor doctor){
         String appointmentNotes;
         Date appointmentDate = null;
-        String appointmentTime;
+        int appointmentTime = 0;
+        ArrayList<Integer> availableSlots = new ArrayList<>();
+        availableSlots.add(5);
+        availableSlots.add(6);
+        availableSlots.add(7);
+        availableSlots.add(8);
+        availableSlots.add(9);
 
         // Enter appointment details
         System.out.println("Enter Appointment notes: ");
@@ -265,7 +273,7 @@ public class Input implements AutoCloseable {
             if(doctor.getAvailabilityList().isEmpty()){
                 return null;
             }
-            System.out.println("Enter appointment date: ");
+
             appointmentDate = this.date();
             if (appointmentDate == null) {
                 return null;
@@ -282,10 +290,51 @@ public class Input implements AutoCloseable {
         }
 
         // Select a time for the booking
-        System.out.println("Enter time of appointment: ");
-        appointmentTime = this.string();
+        System.out.println("Enter a time slot for the appointment");
+        while (true){
+            System.out.println("Available time slots: ");
+            if (doctor.getCalendar().get(appointmentDate) == null) {
+                System.out.println("5, 6, 7, 8, 9");
+            } else {
+                for (int i = 0; i < doctor.getCalendar().get(appointmentDate).size(); i++) {
+                    if (doctor.getCalendar().get(appointmentDate).get(i) != null) {
+                        availableSlots.set(i, null);
+                    }
+                }
+                for (int i = 0; i < availableSlots.size(); i++) {
+                    if(availableSlots.get(i) != null) {
+                        System.out.println(availableSlots.get(i) + "pm ");
+                    }
+                }
+                System.out.println("Enter time (eg:- enter '6' for 6pm): ");
+            }
 
-        return new Appointment(doctor,patient,appointmentNotes,appointmentDate, appointmentTime);
+            appointmentTime = this.integer();
+            if(appointmentTime < 5 || appointmentTime > 9){
+                System.out.println("Enter a valid time slot");
+            }
+            else if (!availableSlots.contains(appointmentTime)) {
+                System.out.println("Time slot already booked. Select a different slot");
+            }
+            else {
+                break;
+            }
+        }
+
+        // Entry Summery
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = dateFormat.format(appointmentDate);
+
+        System.out.println("\nEntry Summery" +
+                "\nPatient ID: " + patient.getID() + "\nPatient Name: " + patient.getName() +
+                "\nDoctor Name: " + doctor.getName() + "\nDoctor Specialization: " + doctor.getSpecialization() +
+                "\nAppointment Notes: " + appointmentNotes + "\nAppointment Date: " + formattedDate + "\nAppointment Time: " + appointmentTime + ":00pm");
+        System.out.println("Book appointment? (Y/N): ");
+        if (sc.next().toLowerCase().equals("y")) {
+            return new Appointment(doctor,patient,appointmentNotes,appointmentDate, appointmentTime);
+        }
+        return null;
     }
 
     @Override
