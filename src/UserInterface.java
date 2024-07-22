@@ -47,7 +47,7 @@ public class UserInterface {
             adminMenuSelection = adminInput.adminMenu();
 
             if (adminMenuSelection == 1) {
-                manager.addNewDoctor();
+                manager.addDoctor();
             } else if (adminMenuSelection == 2) {
                 manager.addDoctorAvailability();
             } else {
@@ -72,7 +72,7 @@ public class UserInterface {
             if (patientMenuSelection == 1) {
                 displayAllDoctors(manager);
             } else if (patientMenuSelection == 2) {
-                displayDoctorAvailability(manager);
+                manager.bookAppointment();
             } else if (patientMenuSelection == 3) {
                 System.out.println("Selected to view a doctor's bookings");
             } else if (patientMenuSelection == 4) {
@@ -102,9 +102,8 @@ public class UserInterface {
         }
     }
 
-    public void displayDoctorAvailability(Manager manager){
+    static void displayDoctorAvailability(Doctor doctor){
         Input input = new Input();
-        Doctor doctor = input.getDoctor(manager.getDoctorMap());
         System.out.println("\nDoctor name: " + doctor.getName());
 
         System.out.println("Availabilities:");
@@ -112,6 +111,9 @@ public class UserInterface {
         for (Date date : doctor.getAvailabilityList()) {
             String formattedDate = dateFormat.format(date);
             System.out.println(formattedDate);
+        }
+        if (doctor.getAvailabilityList().isEmpty()) {
+            System.out.println("(Doctor not available)\n");
         }
     }
 }
