@@ -6,6 +6,7 @@ public class Doctor {
     private String specialization; //  Pass specialization as Neruophysician, Neurologist etc
     private String contactNumber;
     private ArrayList<Date> availabilityList = new ArrayList<>();
+    private HashMap<Date, ArrayList<Appointment>> calendar = new HashMap<>();
 
     public
     Doctor(String ID, String name, String specialization, String contactNumber) {
@@ -43,15 +44,33 @@ public class Doctor {
         this.contactNumber = contactNumber;
     }
     public ArrayList<Date> getAvailabilityList (){ return availabilityList; }
+    public HashMap<Date, ArrayList<Appointment>> getCalendar (){ return calendar; }
+
     public void dsplayInfo(){
         System.out.println("ID: " + this.ID + "Name: " + this.name + "Specialization: " + this.specialization + "ContactNumber: " + this.contactNumber);
     }
+
     public void addAvailability (Date availability){
         availabilityList.add(availability);
     }
 
-    public void viewAvailability(){
+    public void addAppointment(Date appointmentDate, Appointment appointment){
 
+        //check if appointment list exists for given date in calendar
+        ArrayList<Appointment> appointmentsList = calendar.get(appointmentDate);
+        int timeSlot = appointment.getTime();
+
+        // if list does not exist, create a new appointment list for date
+        if (appointmentsList == null){
+            appointmentsList = new ArrayList<>();
+            for(int i = 0; i < 5; i++){
+                appointmentsList.add(null);
+            }
+            appointmentsList.set(0, appointment);
+            calendar.put(appointmentDate, appointmentsList);
+        } // else add new appointment to list on that date
+        else {
+            appointmentsList.set(timeSlot - 5, appointment);
+        }
     }
-
 }

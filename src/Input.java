@@ -1,4 +1,6 @@
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -23,9 +25,11 @@ public class Input implements AutoCloseable {
         sc.nextLine(); // Consume the newline left-over
         return value;
     }
+
     public String string(){
         return sc.nextLine();
     }
+
     public double doubleValue() {
         while (!sc.hasNextDouble()) {
             System.out.println("Invalid input. Please enter a decimal value.");
@@ -34,6 +38,40 @@ public class Input implements AutoCloseable {
         double value = sc.nextDouble();
         sc.nextLine(); // Consume the newline left-over
         return value;
+    }
+
+    public Date date(){
+        int year;
+        int month;
+        int day;
+        System.out.println("\nEnter Date");
+        System.out.println("Enter year (eg:-2024)\nOR enter '0' to exit:");
+        year = this.integer();
+        if (year == 0) {
+            return null;
+        }
+        year -= 1900;
+        System.out.println("Month (eg:- 7 for July)\nOR enter '0' to exit: ");
+        month = this.integer();
+        while((month < 0) || (month > 12)){
+            System.out.println("Invalid month. Please enter a valid month.\nOR enter '0' to exit:");
+            month = this.integer();
+        }
+        if (month == 0) {
+            return null;
+        }
+        month --;
+        System.out.println("Enter Day (eg:- 25 for the 25th)\nOR enter '0' to exit: ");
+        day = this.integer();
+        while(day < 0 || day > 31){
+            System.out.println("Invalid day. Please enter a valid day.\nOR enter '0' to exit:");
+            day = this.integer();
+        }
+        if (day == 0) {
+            return null;
+        }
+
+        return new Date(year, month, day);
     }
 
     public int mainMenu(){
@@ -68,43 +106,103 @@ public class Input implements AutoCloseable {
         return patientMenuSelection;
     }
 
-    public Doctor newDoctor(){
+    public Doctor newDoctor(HashMap<String, Doctor> doctorMap){
         String ID = null;
         String name = null;
         String specializaton = null;
-        String contactNumber = null;
+        int contactNumber;
 
-        System.out.println("Enter Doctor ID: ");
+        System.out.println("Enter Doctor ID OR enter '0' to exit: ");
         ID = this.string();
+        while(doctorMap.containsKey(ID) && (!ID.equals("0"))){
+            System.out.println("Doctor ID already exists. Please choose another ID\n OR enter '0' to exit: ");
+            ID = this.string();
+        }
+        if (ID.equals("0")) {
+            return null;
+        }
         System.out.println("Enter Doctor Name: ");
         name = this.string();
         System.out.println("Enter Doctor's Specializaton: ");
         specializaton = this.string();
         System.out.println("Enter Doctor's Contact Number: ");
-        contactNumber = this.string();
-        return new Doctor(ID, name, specializaton, contactNumber);
+        contactNumber = this.integer();
+        while (contactNumber < 110000000 || contactNumber > 999999999){
+            System.out.println("Invalid number. Please enter a 10 digit contact number");
+            contactNumber = this.integer();
+        }
+
+        //output doctor details before entering to database
+        System.out.println("\nEntry Summery\nDoctor ID: " + ID + "\nDoctor Name: " + name + "\nSpecialization: " + specializaton + "\nContact Number: " + contactNumber);
+        System.out.println("Save doctor? (Y/N)");
+        if (sc.next().toLowerCase().equals("y")){
+            return new Doctor(ID, name, specializaton, String.valueOf(contactNumber));
+        }
+        else{
+            return null;
+        }
+    }
+
+    public Date newDoctorAvailability(Doctor doctor){
+        Date availableDate;
+        System.out.println("Enter new available date: ");
+        availableDate = this.date();
+
+        //validating date
+        if (availableDate == null) {return null;}
+        for (Date date : doctor.getAvailabilityList()) {
+            // Compare dates without considering the time part
+            if (date.equals(availableDate)) {
+                System.out.println("Doctor is already available on that date");
+                return null;
+            }
+        }
+        return availableDate;
+    }
+
+    public String checkDoctorExistance(HashMap<String, Doctor> doctorMap){
+        System.out.println("Enter Doctor ID: ");
+        String ID = this.string();
+        // Validating patient ID
+        while(doctorMap.get(ID) == null && !ID.equals("0")){
+            System.out.println("Invalid Doctor ID. Enter valid Doctor ID OR Enter '0' to exit:");
+            ID = this.string();
+        }
+
+        if (ID.equals("0")){
+            return null;
+        }
+        else{
+            return ID;
+        }
     }
 
     public Patient newPatient(){
         String ID = null;
         String name = null;
         String dateOfBirth = null;
-        String contactNumber = null;
+        int contactNumber;
         String gender = null;
 
         // Getting patient ID in required format
         System.out.println("Enter first letter of Patient ID- 'T' or 'D')\nEnter letter: ");
         char patientType = this.character();
-        while (patientType != 'T' && patientType != 'D')
+        while (patientType != 'T' && patientType != 'D' && patientType != '0')
         {
-            System.out.println("Invalid. Enter upper case 'T' or 'D'. Check Patient ID again\n Enter Letter: ");
+            System.out.println("Invalid. Enter upper case 'T' or 'D'. Check Patient ID again\nOR enter '0' to exit: ");
             patientType = character();
+        }
+        if (patientType == '0'){
+            return null;
         }
         System.out.println("Enter the 4 digit number in patient ID (eg- 0034)\nEnter number: ");
         int patientNumber = this.integer();
-        while (patientNumber < 1 || patientNumber > 9999) {
-            System.out.println("Invalid number. Enter the 4 digit number in patient ID (eg- 0034). Check patient ID again.\nEnter number: ");
+        while (patientNumber < 0 || patientNumber > 9999) {
+            System.out.println("Invalid number. Enter the 4 digit number in patient ID (eg- 0034). Check patient ID again.\nOR enter '0' to exit: ");
             patientNumber = this.integer();
+        }
+        if (patientNumber == 0) {
+            return null;
         }
         // Format the patient number to ensure it has four digits
         String patientNumberString = String.format("%04d", patientNumber);
@@ -113,51 +211,130 @@ public class Input implements AutoCloseable {
 
         System.out.println("Enter Patient Name: ");
         name = string();
-        System.out.println("Enter Patient's Date of Birth: ");
+        System.out.println("Enter Patient's Date of Birth (DD/MM/YYYY): ");
         dateOfBirth = string();
         System.out.println("Enter Patient Contact Number: ");
-        contactNumber = string();
+        contactNumber = integer();
+        while (contactNumber < 110000000 || contactNumber > 999999999){
+            System.out.println("Invalid number. Please enter a 10 digit contact number");
+            contactNumber = this.integer();
+        }
         System.out.println("Enter Patient Gender(Enter 'm' for male / 'f' for female: ");
         gender = string();
-        return new Patient(ID, name, dateOfBirth, contactNumber, gender);
+
+        //Output new patient details before saving
+        System.out.println("Entry Summery\nPatient ID: " + ID + "\nPatient Name: " + name + "\nPatient's Date of Birth: " + dateOfBirth + "\nPatient's Contact Number: " + contactNumber);
+        System.out.println("Save patient? (Y/N)");
+        if (sc.next().toLowerCase().equals("y")) {
+            return new Patient(ID, name, dateOfBirth, String.valueOf(contactNumber), gender);
+        }
+        else {
+            return null;
+        }
     }
 
-    public String checkDoctorExistance(HashMap<String, Doctor> doctorMap){
-        System.out.println("Enter Doctor ID: ");
+    public String checkPatientExistance(HashMap<String, Patient> patientMap){
+        System.out.println("Enter Patient ID: ");
         String ID = this.string();
-        // Validating doctor ID
-        if(!Manager.searchDoctor(ID, doctorMap)){
-            System.out.println("Invalid Doctor ID");
+
+        // Validating patient ID
+        while(patientMap.get(ID) == null && !ID.equals("0")){
+            System.out.println("Invalid Patient ID. Enter valid patient ID in format 'T-001' OR Enter '0' to exit:");
+            ID = this.string();
+        }
+
+        if (ID.equals("0")){
             return null;
-        } else{
+        }
+        else{
             return ID;
         }
     }
 
-    public Date newDoctorAvailability(HashMap<String, Doctor> doctorMap){
-        System.out.println("Enter Date\n");
-        System.out.println("Enter year (eg-2024): ");
-        int year = this.integer() - 1900;
-        System.out.println("Month (eg- 7 for July): ");
-        int month = this.integer();
-        while(month < 1 || month > 12){
-            System.out.println("Invalid month. Please enter a valid month.");
-            month = this.integer();
-        }
-        month --;
-        System.out.println("Enter Day (eg- 25 for the 25th): ");
-        int day = this.integer();
-        while(day < 1 || day > 31){
-            System.out.println("Invalid day. Please enter a valid day.");
-            day = this.integer();
+    public Appointment newAppointment (Patient patient, Doctor doctor){
+        String appointmentNotes;
+        Date appointmentDate = null;
+        int appointmentTime = 0;
+        ArrayList<Integer> availableSlots = new ArrayList<>();
+        availableSlots.add(5);
+        availableSlots.add(6);
+        availableSlots.add(7);
+        availableSlots.add(8);
+        availableSlots.add(9);
+
+        // Enter appointment details
+        System.out.println("Enter Appointment notes: ");
+        appointmentNotes = this.string();
+
+        // Display doctor availability and select an available date
+        boolean dateExists = false;
+        while(!dateExists){
+            UserInterface.displayDoctorAvailability(doctor);
+            if(doctor.getAvailabilityList().isEmpty()){
+                return null;
+            }
+
+            appointmentDate = this.date();
+            if (appointmentDate == null) {
+                return null;
+            }
+            for (Date date : doctor.getAvailabilityList()) {
+                // Compare dates without considering the time part
+                if (date.equals(appointmentDate)) {
+                    dateExists = true;
+                }
+            }
+            if(!dateExists){
+                System.out.println("Select a date from the available dates.");
+            }
         }
 
-        return new Date(year, month, day);
-    }
+        // Select a time for the booking
+        System.out.println("Enter a time slot for the appointment");
+        while (true){
+            System.out.println("Available time slots: ");
+            if (doctor.getCalendar().get(appointmentDate) == null) {
+                System.out.println("5, 6, 7, 8, 9");
+            } else {
+                for (int i = 0; i < doctor.getCalendar().get(appointmentDate).size(); i++) {
+                    if (doctor.getCalendar().get(appointmentDate).get(i) != null) {
+                        availableSlots.set(i, null);
+                    }
+                }
+                for (int i = 0; i < availableSlots.size(); i++) {
+                    if(availableSlots.get(i) != null) {
+                        System.out.println(availableSlots.get(i) + "pm ");
+                    }
+                }
+                System.out.println("Enter time (eg:- enter '6' for 6pm): ");
+            }
 
-    public Doctor getDoctor(HashMap<String, Doctor> doctorMap){
-        String doctorID = checkDoctorExistance(doctorMap);
-        return doctorMap.get(doctorID);
+            appointmentTime = this.integer();
+            if(appointmentTime < 5 || appointmentTime > 9){
+                System.out.println("Enter a valid time slot");
+            }
+            else if (!availableSlots.contains(appointmentTime)) {
+                System.out.println("Time slot already booked. Select a different slot");
+            }
+            else {
+                break;
+            }
+        }
+
+        // Entry Summery
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = dateFormat.format(appointmentDate);
+
+        System.out.println("\nEntry Summery" +
+                "\nPatient ID: " + patient.getID() + "\nPatient Name: " + patient.getName() +
+                "\nDoctor Name: " + doctor.getName() + "\nDoctor Specialization: " + doctor.getSpecialization() +
+                "\nAppointment Notes: " + appointmentNotes + "\nAppointment Date: " + formattedDate + "\nAppointment Time: " + appointmentTime + ":00pm");
+        System.out.println("Book appointment? (Y/N): ");
+        if (sc.next().toLowerCase().equals("y")) {
+            return new Appointment(doctor,patient,appointmentNotes,appointmentDate, appointmentTime);
+        }
+        return null;
     }
 
     @Override
@@ -166,4 +343,5 @@ public class Input implements AutoCloseable {
             sc.close();
         }
     }
+
 }

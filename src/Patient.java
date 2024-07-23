@@ -6,8 +6,7 @@ public class Patient {
     String contactNumber;
     String gender;
 
-    public
-    Patient(String ID, String Name, String dateOfBirth, String contactNumber, String gender) {
+    public Patient(String ID, String Name, String dateOfBirth, String contactNumber, String gender) {
         this.ID = ID;
         this.Name = Name;
         this.dateOfBirth = dateOfBirth;
@@ -15,35 +14,35 @@ public class Patient {
         this.gender = gender;
     }
 
-    char getPatientType()
+    public char getPatientType()
     {
         return ID.charAt(0);
     }
-    String getID() {
+    public String getID() {
         return ID;
     }
-    String getName() {
+    public String getName() {
         return Name;
     }
-    String getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
-    String getContactNumber() {
+    public String getContactNumber() {
         return contactNumber;
     }
-    String getGender() { return gender; }
+    public String getGender() { return gender; }
 
-    void setID(String ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
-    void setName(String Name) {
+    public void setName(String Name) {
         this.Name = Name;
     }
-    void setDateOfBirth(String Birthday) {
+    public void setDateOfBirth(String Birthday) {
         this.dateOfBirth = Birthday;
     }
-    void setContactNumber(String contactNumber) {
+    public void setContactNumber(String contactNumber) {
         this.contactNumber = contactNumber;
     }
-    void setGender(String gender) { this.gender = gender; }
+    public void setGender(String gender) { this.gender = gender; }
 }
