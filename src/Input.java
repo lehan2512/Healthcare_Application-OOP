@@ -106,7 +106,7 @@ public class Input implements AutoCloseable {
         return patientMenuSelection;
     }
 
-    public Doctor newDoctor(HashMap<String, Doctor> doctorMap){
+    public Doctor getNewDoctor(HashMap<String, Doctor> doctorMap){
         String ID = null;
         String name = null;
         String specializaton = null;
@@ -143,7 +143,7 @@ public class Input implements AutoCloseable {
         }
     }
 
-    public Date newDoctorAvailability(Doctor doctor){
+    public Date getNewDoctorAvailability(Doctor doctor){
         Date availableDate;
         System.out.println("Enter new available date: ");
         availableDate = this.date();
@@ -177,7 +177,7 @@ public class Input implements AutoCloseable {
         }
     }
 
-    public Patient newPatient(){
+    public Patient getNewPatient(){
         String ID = null;
         String name = null;
         String dateOfBirth = null;
@@ -251,20 +251,74 @@ public class Input implements AutoCloseable {
         }
     }
 
-    public Appointment newAppointment (Patient patient, Doctor doctor){
+    public char getNewAppointmentType(){
+        System.out.println("Select Appointment Type\n'G' for General Appointment\n'R' for Referral Appointment\nEnter Letter: ");
+        char appointmentType = this.character();
+
+        while(appointmentType != 'G' && appointmentType != 'R' && appointmentType != '0'){
+            System.out.println("Invalid Appointment Type. Enter valid Appointment Type\nOR press '0' to exit");
+            appointmentType = this.character();
+        }
+        if (appointmentType == '0'){
+            return 0;
+        }
+        else{
+            return appointmentType;
+        }
+    }
+
+    public Appointment getNewAppointment (Patient patient, Doctor doctor){
         String appointmentNotes;
-        Date appointmentDate = null;
-        int appointmentTime = 0;
-        ArrayList<Integer> availableSlots = new ArrayList<>();
-        availableSlots.add(5);
-        availableSlots.add(6);
-        availableSlots.add(7);
-        availableSlots.add(8);
-        availableSlots.add(9);
+        Date appointmentDate;
+        int appointmentTime;
+
 
         // Enter appointment details
-        System.out.println("Enter Appointment notes: ");
+        appointmentNotes = getAppointmentNotes();
         appointmentNotes = this.string();
+        appointmentDate = getAppointmentDate(doctor);
+        appointmentTime = getAppointmentTime(doctor, appointmentDate);
+
+
+        // Entry Summery
+        UserInterface.displayNewAppointmentSummery(doctor, patient, appointmentDate, appointmentTime, appointmentNotes);
+
+        System.out.println("Book appointment? (Y/N): ");
+        if (sc.next().toLowerCase().equals("y")) {
+            return new GeneralAppointment(doctor,patient,appointmentDate, appointmentTime, appointmentNotes);
+        }
+        return null;
+    }
+
+    public Appointment getNewAppointment (Patient patient, Doctor doctor, Doctor referralDoctor){
+        String appointmentNotes;
+        Date appointmentDate;
+        int appointmentTime;
+
+        // Enter appointment details
+        appointmentNotes = getAppointmentNotes();
+        appointmentNotes = this.string();
+        appointmentDate = getAppointmentDate(doctor);
+        appointmentTime = getAppointmentTime(doctor, appointmentDate);
+
+        // Entry Summery
+        UserInterface.displayNewAppointmentSummery(doctor, patient, appointmentDate, appointmentTime, referralDoctor, appointmentNotes);
+
+        System.out.println("Book appointment? (Y/N): ");
+        if (sc.next().toLowerCase().equals("y")) {
+            return new ReferralAppointment(doctor,patient,appointmentDate,appointmentTime,referralDoctor,appointmentNotes);
+        }
+        return null;
+    }
+
+    public String getAppointmentNotes (){
+        System.out.println("Enter Appointment notes: ");
+        String appointmentNotes = this.string();
+        return appointmentNotes;
+    }
+
+    public Date getAppointmentDate (Doctor doctor){
+        Date appointmentDate = null;
 
         // Display doctor availability and select an available date
         boolean dateExists = false;
@@ -288,6 +342,18 @@ public class Input implements AutoCloseable {
                 System.out.println("Select a date from the available dates.");
             }
         }
+        return appointmentDate;
+    }
+
+    public int getAppointmentTime(Doctor doctor, Date appointmentDate){
+        int appointmentTime;
+
+        ArrayList<Integer> availableSlots = new ArrayList<>();
+        availableSlots.add(5);
+        availableSlots.add(6);
+        availableSlots.add(7);
+        availableSlots.add(8);
+        availableSlots.add(9);
 
         // Select a time for the booking
         System.out.println("Enter a time slot for the appointment");
@@ -320,22 +386,9 @@ public class Input implements AutoCloseable {
                 break;
             }
         }
-
-        // Entry Summery
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDate = dateFormat.format(appointmentDate);
-
-        System.out.println("\nEntry Summery" +
-                "\nPatient ID: " + patient.getID() + "\nPatient Name: " + patient.getName() +
-                "\nDoctor Name: " + doctor.getName() + "\nDoctor Specialization: " + doctor.getSpecialization() +
-                "\nAppointment Notes: " + appointmentNotes + "\nAppointment Date: " + formattedDate + "\nAppointment Time: " + appointmentTime + ":00pm");
-        System.out.println("Book appointment? (Y/N): ");
-        if (sc.next().toLowerCase().equals("y")) {
-            return new Appointment(doctor,patient,appointmentNotes,appointmentDate, appointmentTime);
-        }
-        return null;
+        return appointmentTime;
     }
+
 
     @Override
     public void close() {

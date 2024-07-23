@@ -116,4 +116,27 @@ public class UserInterface {
             System.out.println("(Doctor not available)\n");
         }
     }
+
+    // For General Appointments
+    static void displayNewAppointmentSummery(Doctor doctor, Patient patient, Date appointmentDate, int appointmentTime, String appointmentNotes){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = dateFormat.format(appointmentDate);
+
+        System.out.println("\nEntry Summery" +
+                "\nPatient ID: " + patient.getID() + "\nPatient Name: " + patient.getName() +
+                "\nDoctor Name: " + doctor.getName() + "\nDoctor Specialization: " + doctor.getSpecialization() +
+                "\nAppointment Notes: " + appointmentNotes + "\nAppointment Date: " + formattedDate + "\nAppointment Time: " + appointmentTime + ":00pm");
+    }
+
+    // For Referred Appointments
+    static void displayNewAppointmentSummery(Doctor doctor, Patient patient, Date appointmentDate, int appointmentTime, Doctor referralDoctor, String appointmentNotes){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = dateFormat.format(appointmentDate);
+
+        System.out.println("\nEntry Summery" +
+                "\nPatient ID: " + patient.getID() + "\nPatient Name: " + patient.getName() +
+                "\nDoctor Name: " + doctor.getName() + "\nDoctor Specialization: " + doctor.getSpecialization() +
+                "\nAppointment Notes: " + appointmentNotes + "\nAppointment Date: " + formattedDate + "\nAppointment Time: " + appointmentTime + ":00pm" +
+                "\nReferred Doctor Name: " + referralDoctor.getName() + "\nReferred Doctor Specialization: " + referralDoctor.getSpecialization());
+    }
 }
